@@ -43,7 +43,8 @@ class SnoothClient(object):
         response = requests.get(
             self.WINE_SEARCH_URL,
             params=query,
-            verify=True, timeout=self.timeout
+            verify=True,
+            timeout=self.timeout
         )
         return response
 
@@ -54,10 +55,6 @@ class SnoothClient(object):
     def _wineify_wine_search(self, python_response):
         wines = python_response['wines']
         return wineify(wines)
-
-
-
-
 
 
 # u'minimum price (mp) is not numeric'
