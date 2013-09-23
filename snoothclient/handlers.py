@@ -25,7 +25,7 @@ def wine_search_client_handler(fn):
                 raise SnoothTypeError('Max/min price should be numeric')
             elif err == 'authentication key is wrong':
                 raise SnoothValueError('Bad API key')
-            raise SnoothException('Problem with API')
+            raise SnoothException('Client Error')
         if meta['results'] == 0:
             logging.warning('No matches, check query')
         return python_response
