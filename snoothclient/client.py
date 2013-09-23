@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import requests
 from api_key import API_KEY
+from errors import SnoothException
 from handlers import (
-    SnoothException, wine_search_handler, wine_search_client_handler
+    wine_search_handler, wine_search_client_handler
 )
 from utils import wineify
 

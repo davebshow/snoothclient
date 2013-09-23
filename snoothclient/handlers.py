@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
-from requests import HTTPError
+from errors import (
+    SnoothException, SnoothHTTPError, SnoothTypeError, SnoothValueError
+)
 
 
 def wine_search_handler(fn):
@@ -30,19 +32,3 @@ def wine_search_client_handler(fn):
             logging.warning('No matches, check query')
         return python_response
     return wine_search_python_response_wrapper
-
-
-class SnoothException(Exception):
-    pass
-
-
-class SnoothTypeError(TypeError):
-    pass
-
-
-class SnoothValueError(ValueError):
-    pass
-
-
-class SnoothHTTPError(HTTPError):
-    pass
