@@ -2,7 +2,7 @@
 
 *.pyc
 *.py~
-api_key.py
+api_key.txt
 
 
 # C extensions
