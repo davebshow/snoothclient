@@ -2,6 +2,7 @@
 
 *.pyc
 *.py~
+.gitignore~
 api_key.py
 
 
