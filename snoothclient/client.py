@@ -23,7 +23,9 @@ class SnoothClient(object):
                     prod_type=None, color=None, store_id=None, country=None,
                     zipcode=None, lat=None, lng=None, sort=None,
                     min_price=None, max_price=None, min_rank=None,
-                    max_rank=None, lang=None):
+                    max_rank=None, lang=None, timeout=None):
+        if timeout is None:
+            timeout = self.timeout
         if lat and not lng or lng and not lat:
             raise SnoothException('Must pass both lat and lng')
         query = {
@@ -34,17 +36,17 @@ class SnoothClient(object):
             's': sort, 'mp': min_price, 'xp': max_price, 'mr': min_rank,
             'xr': max_rank, 'lang': lang
         }
-        response = self.get_wine_search(query)
+        response = self.get_wine_search(query, timeout=timeout)
         python_response = self.parse_wine_search(response)
         return self._wineify_wine_search(python_response)
 
     @wine_search_handler
-    def get_wine_search(self, query):
+    def get_wine_search(self, query, timeout):
         response = requests.get(
             self.WINE_SEARCH_URL,
             params=query,
             verify=True,
-            timeout=self.timeout
+            timeout=timeout
         )
         return response
 
