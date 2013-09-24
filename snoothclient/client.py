@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 import requests
 from api_key import API_KEY
-from errors import SnoothException
-from handlers import (
-    wine_search_handler, wine_search_client_handler, store_search_handler,
-    store_search_client_handler
-)
+from errors import SnoothError
+from handlers import http_error_handler, snooth_error_handler
 from utils import wineify
 
 
@@ -29,7 +26,7 @@ class SnoothClient(object):
                     min_price=None, max_price=None, min_rank=None,
                     max_rank=None, lang=None, timeout=None):
         if lat and not lng or lng and not lat:
-            raise SnoothException('Must pass both lat and lng')
+            raise SnoothError('Must pass both lat and lng')
         if timeout is None:
             timeout = self.timeout
         if first_result is None:
@@ -48,7 +45,7 @@ class SnoothClient(object):
             python_response = self._wineify_wine_search(response)
         return python_response
 
-    @wine_search_handler
+    @http_error_handler
     def get_wine_search(self, query, timeout):
         response = requests.get(
             self.WINE_SEARCH_URL,
@@ -58,7 +55,7 @@ class SnoothClient(object):
         )
         return response
 
-    @wine_search_client_handler
+    @snooth_error_handler
     def parse_wine_search(self, response):
         return response.json()
 
@@ -71,7 +68,7 @@ class SnoothClient(object):
         if timeout is None:
             timeout = self.timeout
         if lat and not lng or lng and not lat:
-            raise SnoothException('Must pass both lat and lng')
+            raise SnoothError('Must pass both lat and lng')
         query = {
             'akey': self.api_key, 'format': self.format, 'ip': self.ip,
             'u': self.username, 'p': self.password, 'c': country,
@@ -81,7 +78,7 @@ class SnoothClient(object):
         python_response = self.parse_store_search(response)
         return python_response
 
-    @store_search_handler
+    @http_error_handler
     def get_store_search(self, query, timeout):
         response = requests.get(
             self.STORE_SEARCH_URL,
@@ -91,6 +88,6 @@ class SnoothClient(object):
         )
         return response
 
-    @store_search_client_handler
+    @snooth_error_handler
     def parse_store_search(self, response):
         return response.json()

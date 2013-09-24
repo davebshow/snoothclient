@@ -2,7 +2,7 @@
 from requests import HTTPError
 
 
-class SnoothException(Exception):
+class SnoothError(Exception):
     pass
 
 
