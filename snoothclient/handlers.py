@@ -22,7 +22,14 @@ def snooth_error_handler(fn):
         meta = snooth_response['meta']
         errmsg = meta['errmsg'].decode('utf-8')
         if errmsg:
-            if errmsg == 'minimum price (mp) is not numeric' or \
+            import ipdb; ipdb.set_trace()
+            if errmsg == 'authentication key is missing':
+                raise SnoothError('No API key')
+            elif errmsg == 'Please enter a valid email address.':
+                raise SnoothError('Please enter a valid email address.')
+            elif errmsg == 'Please enter a password with no spaces 4 to 16 characters in length.':
+                raise SnoothError('Enter password 4-16 chars')
+            elif errmsg == 'minimum price (mp) is not numeric' or \
                     errmsg == 'maximum price (xp) is not numeric':
                 raise SnoothTypeError('Max/min price should be numeric')
             elif errmsg == 'authentication key is wrong':

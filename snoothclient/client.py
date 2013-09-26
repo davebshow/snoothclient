@@ -9,6 +9,7 @@ from utils import wineify
 class SnoothClient(object):
     WINE_SEARCH_URL = 'https://api.snooth.com/wines/'
     STORE_SEARCH_URL = 'https://api.snooth.com/stores/'
+    CREATE_ACCOUNT_URL = 'https://api.snooth.com/create-account/'
 
     def __init__(self, api_key=API_KEY, format='json', ip=None,
                  username=None, password=None, timeout=None):
@@ -39,25 +40,11 @@ class SnoothClient(object):
             's': sort, 'mp': min_price, 'xp': max_price, 'mr': min_rank,
             'xr': max_rank, 'lang': lang
         }
-        response = self.get_wine_search(query, timeout=timeout)
-        python_response = self.parse_wine_search(response)
+        response = self.get(self.WINE_SEARCH_URL, query, timeout=timeout)
+        python_response = self.parse_response(response)
         if wineify is True:
             python_response = self._wineify_wine_search(response)
         return python_response
-
-    @http_error_handler
-    def get_wine_search(self, query, timeout):
-        response = requests.get(
-            self.WINE_SEARCH_URL,
-            params=query,
-            verify=True,
-            timeout=timeout
-        )
-        return response
-
-    @snooth_error_handler
-    def parse_wine_search(self, response):
-        return response.json()
 
     def _wineify_wine_search(self, python_response):
         wines = python_response['wines']
@@ -74,14 +61,40 @@ class SnoothClient(object):
             'u': self.username, 'p': self.password, 'c': country,
             'z': zipcode, 'lat': lat, 'lng': lng
         }
-        response = self.get_store_search(query, timeout)
-        python_response = self.parse_store_search(response)
+        response = self.get(self.STORE_SEARCH_URL, query, timeout)
+        python_response = self.parse_response(response)
+        return python_response
+
+    def create_account(self, email=None, screen_name=None,
+                       password=None, timeout=None):
+        if timeout is None:
+            timeout = self.timeout
+        query = {
+            'akey': self.api_key,
+            'format': self.format,
+            'ip': self.ip,
+            'e': email,
+            's': screen_name,
+            'p': password
+        }
+        response = self.post(self.CREATE_ACCOUNT_URL, query, timeout)
+        python_response = self.parse_response(response)
         return python_response
 
     @http_error_handler
-    def get_store_search(self, query, timeout):
+    def get(self, url, query, timeout):
         response = requests.get(
-            self.STORE_SEARCH_URL,
+            url,
+            params=query,
+            verify=True,
+            timeout=timeout
+        )
+        return response
+
+    @http_error_handler
+    def post(self, url, query, timeout):
+        response = requests.post(
+            url,
             params=query,
             verify=True,
             timeout=timeout
@@ -89,5 +102,5 @@ class SnoothClient(object):
         return response
 
     @snooth_error_handler
-    def parse_store_search(self, response):
+    def parse_response(self, response):
         return response.json()
