@@ -3,6 +3,7 @@ python:
 - '2.7'
 - '3.3'
 script: python food2forkclient/tests.py
+install: "pip install -r requirements.txt --use-mirrors"
 env:
   global:
     secure: KWvmuOXwU9hR/KdxfLypkfCAYE1YKw3HJirVSmNGSz3Fp4CQ39KckIkSTee+FRLEiAh1iBu3UecFiCEgSGEtdc/aO0jii7R+zC++uRcSkwOXb1lKTJ7IJme/GpJMfotqv884GzT/PqzORPPl19LFAPN/PZ+36THpwHguwvMZ9HQ=
