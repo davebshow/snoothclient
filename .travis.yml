@@ -6,4 +6,4 @@ script: python snoothclient/tests.py
 install: "pip install -r requirements.txt --use-mirrors"
 env:
   global:
-    secure: KWvmuOXwU9hR/KdxfLypkfCAYE1YKw3HJirVSmNGSz3Fp4CQ39KckIkSTee+FRLEiAh1iBu3UecFiCEgSGEtdc/aO0jii7R+zC++uRcSkwOXb1lKTJ7IJme/GpJMfotqv884GzT/PqzORPPl19LFAPN/PZ+36THpwHguwvMZ9HQ=
+    secure: EGdhS2Y4ECegCltBEdd5ypmwUQmcI35L2dP/fLgEzLUu7/J0AIX5aC60DWhlP4gKQKZ2bxEInbqNQWX507j5T0fsQzYcBccQwnoBahcX5p8yETgZPzTWZVfXIyOz7/Z9Yv0oiYaKgeIacvRD6vEDqgJwk7oEvjCCTkPCkVUz3js=
