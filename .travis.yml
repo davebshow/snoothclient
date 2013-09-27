@@ -2,7 +2,7 @@ language: python
 python:
 - '2.7'
 - '3.3'
-script: python food2forkclient/tests.py
+script: python snoothforkclient/tests.py
 install: "pip install -r requirements.txt --use-mirrors"
 env:
   global:
