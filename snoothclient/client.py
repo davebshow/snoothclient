@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
+import os
+import sys
 import requests
-from api_key import API_KEY
 from errors import SnoothError
 from handlers import http_error_handler, snooth_error_handler
 from utils import wineify
+
+try:
+    API_KEY = os.environ['API_KEY']
+except KeyError:
+    API_KEY = None
+    sys.stderr.write('Please set os.environ["API_KEY"] = yourapikey, '
+                     'or pass api_key param in SnoothClient')
 
 
 class SnoothClient(object):
