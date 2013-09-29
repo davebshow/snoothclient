@@ -23,13 +23,3 @@ def snooth_error_handler(fn):
             logging.warning('No matches, check query')
         return snooth_response
     return snooth_response_wrapper
-
-
-def timeout_handler(fn):
-    def function_wrapper(self, *args, **kwargs):
-        to = kwargs.get('timeout', '')
-        if not to:
-            to = self.timout
-        output = fn(self, timout=to, *args, **kwargs)
-        return output
-    return function_wrapper

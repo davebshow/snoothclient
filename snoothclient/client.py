@@ -3,8 +3,8 @@ import os
 import sys
 import requests
 from errors import SnoothError
-from handlers import http_error_handler, snooth_error_handler, timeout_handler
-from utils import wineify
+from handlers import http_error_handler, snooth_error_handler
+from utils import wineify, _translate_bool
 
 try:
     API_KEY = os.environ['API_KEY']
@@ -31,13 +31,13 @@ class SnoothClient(object):
 
     # Need more control over output. JSON, Full python, python wine_dict, wine.
     # Translate bool here
-    @timeout_handler
     def wine_search(self, q='wine', wineify=False, count=10, page=1,
                     first_result=None, available=1, prod_type=None,
                     color=None, store_id=None, country=None,
                     zipcode=None, lat=None, lng=None, sort=None,
                     min_price=None, max_price=None, min_rank=None,
                     max_rank=None, lang=None, timeout=None):
+        timeout = self._set_timeout(timeout)
         if lat and not lng or lng and not lat:
             raise SnoothError('Must pass both lat and lng')
         if first_result is None:
@@ -60,9 +60,9 @@ class SnoothClient(object):
         wines = python_response['wines']
         return wineify(wines)
 
-    @timeout_handler
     def store_search(self, country=None, zipcode=None,
                      lat=None, lng=None, timeout=None):
+        timeout = self._set_timeout(timeout)
         if lat and not lng or lng and not lat:
             raise SnoothError('Must pass both lat and lng')
         query = {
@@ -74,9 +74,9 @@ class SnoothClient(object):
         python_response = self.parse_response(response)
         return python_response
 
-    @timeout_handler
     def create_account(self, email=None, screen_name=None,
                        password=None, timeout=None):
+        timeout = self._set_timeout(timeout)
         query = {
             'akey': self.api_key,
             'format': self.format,
@@ -89,12 +89,12 @@ class SnoothClient(object):
         python_response = self.parse_response(response)
         return python_response
 
-    @timeout_handler
     def rate_wine(self, wine_id, username=None,
                   password=None, rating=None, review=None,
                   private=False, tags=None, wishlist=False,
                   cellar_count=None, timeout=None):
-        bools = translate_bool(private, wishlist)
+        timeout = self._set_timeout(timeout)
+        bools = _translate_bool(private, wishlist)
         return bools
 
     @http_error_handler
@@ -121,14 +121,7 @@ class SnoothClient(object):
     def parse_response(self, response):
         return response.json()
 
-
-def translate_bool(*args):
-    results = []
-    for arg in args:
-        if arg is False:
-            arg = 0
-        else:
-            arg = 1
-        results.append(arg)
-    return results
-
+    def _set_timeout(self, timeout):
+        if timeout is None:
+            timeout = self.timeout
+        return timeout
