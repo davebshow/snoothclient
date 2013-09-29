@@ -28,6 +28,7 @@ class SnoothClient(object):
         self.password = password
         self.timeout = timeout
 
+    # Need more control over output. JSON, Full python, python wine_dict, wine.
     def wine_search(self, q='wine', wineify=False, count=10, page=1,
                     first_result=None, available=1, prod_type=None,
                     color=None, store_id=None, country=None,
