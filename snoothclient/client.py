@@ -3,7 +3,7 @@ import os
 import sys
 import requests
 from errors import SnoothError
-from handlers import http_error, snooth_error
+from handlers import http_error_handler, snooth_error_handler
 
 try:
     API_KEY = os.environ['API_KEY']
@@ -295,7 +295,7 @@ class SnoothClient(SnoothBase):
             raise SnoothClient('Unkown error has occured.')
         return output
 
-    @http_error
+    @http_error_handler
     def get(self, url, params, timeout):
         response = requests.get(
             url,
@@ -305,7 +305,7 @@ class SnoothClient(SnoothBase):
         )
         return response
 
-    @http_error
+    @http_error_handler
     def post(self, url, params, timeout):
         response = requests.post(
             url,
@@ -315,7 +315,7 @@ class SnoothClient(SnoothBase):
         )
         return response
 
-    @http_error
+    @http_error_handler
     def put(self, url, params, timeout):
         response = requests.put(
             url,
@@ -325,11 +325,11 @@ class SnoothClient(SnoothBase):
         )
         return response
 
-    @snooth_error(post='')
+    @snooth_error_handler(post='')
     def parse_get_response(self, response):
         return response.json()
 
-    @snooth_error(post='POST')
+    @snooth_error_handler(post='POST')
     def parse_post_response(self, response):
         return response.json()
 

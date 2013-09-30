@@ -7,7 +7,7 @@ class SnoothError(Exception):
     pass
 
 
-def http_error(fn):
+def http_error_handler(fn):
     def http_response_wrapper(self, *args, **kwargs):
         response = fn(self, *args, **kwargs)
         if response.status_code != 200:
@@ -16,8 +16,8 @@ def http_error(fn):
     return http_response_wrapper
 
 
-def snooth_error(post=None):
-    def snooth_error_handler(fn):
+def snooth_error_handler(post=None):
+    def _snooth_error_handler(fn):
         def snooth_response_wrapper(self, *args, **kwargs):
             snooth_response = fn(self, *args, **kwargs)
             meta = snooth_response['meta']
@@ -32,4 +32,4 @@ def snooth_error(post=None):
                 logging.warning('Unsuccessful query')
             return snooth_response
         return wraps(fn)(snooth_response_wrapper)
-    return snooth_error_handler
+    return _snooth_error_handler
