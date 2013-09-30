@@ -343,6 +343,7 @@ class Wine(SnoothBaseObject):
     def __init__(self, wine, username=None, password=None):
         self.username = username
         self.password = password
+        self.name = wine.get('name', '')
         self.code = wine.get('code', '')
         self.winery = wine.get('winery', '')
         self.winery_id = wine.get('winery_id', '')
