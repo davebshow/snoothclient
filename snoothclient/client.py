@@ -2,8 +2,7 @@
 import os
 import sys
 import requests
-from errors import SnoothError
-from handlers import http_error_handler, snooth_error_handler
+from handlers import SnoothError, http_error_handler, snooth_error_handler
 
 try:
     API_KEY = os.environ['API_KEY']
