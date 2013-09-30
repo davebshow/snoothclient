@@ -41,6 +41,7 @@ class SnoothBase(object):
 
 
 class SnoothClient(SnoothBase):
+
     WINE_SEARCH_URL = 'https://api.snooth.com/wines/'
     WINE_DETAIL_URL = 'https://api.snooth.com/wine/'
     MY_WINES_URL = 'https://api.snooth.com/my-wines/'
