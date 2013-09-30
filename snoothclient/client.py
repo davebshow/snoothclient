@@ -63,14 +63,14 @@ class SnoothClient(SnoothBase):
         self.timeout = timeout
 
     def basic_params(self):
-        basic_params = {
+        params = {
             'akey': self.api_key,
             'format': self.format,
             'ip': self.ip,
             'u': self.username,
             'p': self.password,
         }
-        return basic_params
+        return params
 
     def wine_search(self, q='wine', wineify=False, count=10, page=1,
                     first_result=None, available=False, prod_type=None,
