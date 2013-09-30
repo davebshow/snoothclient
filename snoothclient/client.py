@@ -39,6 +39,16 @@ class SnoothBase(object):
             password = self.password
         return username, password
 
+    def _translate_bool(self, *args):
+        results = []
+        for arg in args:
+            if arg is False:
+                arg = 0
+            else:
+                arg = 1
+            results.append(arg)
+        return results
+
 
 class SnoothClient(SnoothBase):
 
@@ -63,13 +73,8 @@ class SnoothClient(SnoothBase):
         self.timeout = timeout
 
     def basic_params(self):
-        params = {
-            'akey': self.api_key,
-            'format': self.format,
-            'ip': self.ip,
-            'u': self.username,
-            'p': self.password,
-        }
+        params = {'akey': self.api_key, 'format': self.format, 'ip': self.ip,
+                  'u': self.username, 'p': self.password}
         return params
 
     def wine_search(self, q='wine', wineify=False, count=10, page=1,
@@ -78,30 +83,16 @@ class SnoothClient(SnoothBase):
                     zipcode=None, lat=None, lng=None, sort=None,
                     min_price=None, max_price=None, min_rank=None,
                     max_rank=None, lang=None, timeout=None):
-        timeout = self._set_timeout(timeout)
-        bools = self._translate_bool(available)
-        first_result = self._paginator(count, page, first_result)
         self._check_lat_lng(lat, lng)
         params = self.basic_params()
-        new_params = {
-            'q': q,
-            'f': first_result,
-            'n': count,
-            'a': bools[0],
-            't': prod_type,
-            'color': color,
-            'm': store_id,
-            'c': country,
-            'z': zipcode,
-            'lat': lat,
-            'lng': lng,
-            's': sort,
-            'mp': min_price,
-            'xp': max_price,
-            'mr': min_rank,
-            'xr': max_rank,
-            'lang': lang
-        }
+        bools = self._translate_bool(available)
+        first_result = self._paginator(count, page, first_result)
+        timeout = self._set_timeout(timeout)
+        new_params = {'q': q, 'f': first_result, 'n': count, 'a': bools[0],
+                      't': prod_type, 'color': color, 'm': store_id,
+                      'c': country, 'z': zipcode, 'lat': lat, 'lng': lng,
+                      's': sort, 'mp': min_price, 'xp': max_price,
+                      'mr': min_rank, 'xr': max_rank, 'lang': lang}
         params.update(new_params)
         response = self.get(self.WINE_SEARCH_URL, params, timeout=timeout)
         python_response = self.parse_get_response(response)
@@ -113,10 +104,10 @@ class SnoothClient(SnoothBase):
     def wine_detail(self, wine_id, price=False, country=None, zipcode=None,
                     pairings=False, photos=False, lat=None, lng=None,
                     language=None, timeout=None):
-        timeout = self._set_timeout(timeout)
-        bools = self._translate_bool(price, pairings, photos)
         self._check_lat_lng(lat, lng)
         params = self.basic_params()
+        bools = self._translate_bool(price, pairings, photos)
+        timeout = self._set_timeout(timeout)
         new_params = {
             'id': wine_id,
             'i': bools[0],
@@ -139,10 +130,10 @@ class SnoothClient(SnoothBase):
 
     def my_wines(self, username=None, password=None, count=10, page=1,
                  ratings=True, wishlist=True, cellar=True, timeout=None):
-        timeout = self._set_timeout(timeout)
-        bools = self._translate_bool(ratings, wishlist, cellar)
         params = self.basic_params()
         username, password = self._set_credentials(username, password)
+        bools = self._translate_bool(ratings, wishlist, cellar)
+        timeout = self._set_timeout(timeout)
         new_params = {
             'u': username,
             'p': password,
@@ -161,18 +152,14 @@ class SnoothClient(SnoothBase):
     def wineify(self, output, username=None, password=None):
         username, password = self._set_credentials(username, password)
         wines = [
-            Wine(
-                wine,
-                username=username,
-                password=password
-            )
-            for wine in output
+            Wine(wine, username=username,
+                 password=password) for wine in output
         ]
         return wines
 
     def winery_detail(self, winery_id, timeout=None):
-        timeout = self._set_timeout(timeout)
         params = self.basic_params()
+        timeout = self._set_timeout(timeout)
         new_params = {'id': winery_id}
         params.update(new_params)
         response = self.get(self.WINERY_DETAIL_URL, params, timeout)
@@ -183,14 +170,13 @@ class SnoothClient(SnoothBase):
             raise SnoothError('Unknown error has occured.')
         return output
 
-    def rate_wine(self, wine_id, method='POST', username=None,
-                  password=None, rating=None, review=None,
-                  private=False, tags=None, wishlist=False,
-                  cellar_count=None, timeout=None):
-        timeout = self._set_timeout(timeout)
-        bools = self._translate_bool(private, wishlist)
+    def rate_wine(self, wine_id, method='POST', username=None, password=None,
+                  rating=None, review=None, private=False, tags=None,
+                  wishlist=False, cellar_count=None, timeout=None):
         params = self.basic_params()
         username, password = self._set_credentials(username, password)
+        bools = self._translate_bool(private, wishlist)
+        timeout = self._set_timeout(timeout)
         new_params = {
             'id': wine_id,
             'u': username,
@@ -200,7 +186,7 @@ class SnoothClient(SnoothBase):
             'v': bools[0],
             't': tags,
             'w': bools[1],
-            'c': cellar_count,
+            'c': cellar_count
         }
         params.update(new_params)
         if method == 'POST':
@@ -215,9 +201,9 @@ class SnoothClient(SnoothBase):
 
     def wishlist(self, wine_id, username=None, password=None, timeout=None):
         """Currently just adds to wine list"""
-        timeout = self._set_timeout(timeout)
         params = self.basic_params()
         username, password = self._set_credentials(username, password)
+        timeout = self._set_timeout(timeout)
         new_params = {
             'id': wine_id,
             'u': username,
@@ -230,9 +216,9 @@ class SnoothClient(SnoothBase):
 
     def store_search(self, country=None, zipcode=None,
                      lat=None, lng=None, timeout=None):
-        timeout = self._set_timeout(timeout)
         self._check_lat_lng(lat, lng)
         params = self.basic_params()
+        timeout = self._set_timeout(timeout)
         new_params = {'c': country, 'z': zipcode, 'lat': lat, 'lng': lng}
         params.update(new_params)
         response = self.get(self.STORE_SEARCH_URL, params, timeout)
@@ -244,9 +230,9 @@ class SnoothClient(SnoothBase):
         return output
 
     def store_detail(self, store_id, reviews=True, timeout=None):
-        timeout = self._set_timeout(timeout)
-        bools = self._translate_bool(reviews)
         params = self.basic_params()
+        bools = self._translate_bool(reviews)
+        timeout = self._set_timeout(timeout)
         new_params = {'id': store_id, 'reviews': bools[0]}
         params.update(new_params)
         response = self.get(self.STORE_DETAIL_URL, params, timeout)
@@ -274,8 +260,8 @@ class SnoothClient(SnoothBase):
 
     def user_activity(self, activity_type=None, before_date='now', count=50,
                       page=1, first_result=1, timeout=None):
-        timeout = self._set_timeout(timeout)
         first_result = self._paginator(count, page, first_result)
+        timeout = self._set_timeout(timeout)
         params = {
             'akey': self.api_key,
             'format': self.format,
@@ -336,16 +322,6 @@ class SnoothClient(SnoothBase):
         else:
             output = None
         return output
-
-    def _translate_bool(self, *args):
-        results = []
-        for arg in args:
-            if arg is False:
-                arg = 0
-            else:
-                arg = 1
-            results.append(arg)
-        return results
 
     def _paginator(self, count, page, first_result):
         if first_result is None:
@@ -445,8 +421,60 @@ class Wine(SnoothBase):
 
 
 class WineStore(SnoothBase):
-    pass
+
+    def __init__(self, store):
+        self.name = store.get('name', '')
+        self.address = store.get('address', '')
+        self.city = store.get('city', '')
+        self.state = store.get('state', '')
+        self.country = store.get('country', '')
+        self.id = store.get('id', '')
+        self.lat = store.get('lat', '')
+        self.lng = store.get('lng', '')
+        self.type = store.get('type', '')
+        self.email = store.get('email', '')
+        self.url = store.get('url', '')
+        self.url_code = store.get('url_code', '')
+        self.phone = store.get('phone', '')
+        self.num_wines = store.get('num_wines', '')
+        self.num_ratings = store.get('num_ratings', '')
+        self.rating = store.get('rating', '')
+        if store.get('closed') == 1:
+            self.closed = True
+        else:
+            self.closed = False
+
+    def detail(self, store_id, reviews=True, timeout=None):
+        snooth = SnoothClient()
+        bools = self._translate_bool(reviews)
+        response = snooth.store_detail(
+            self.id,
+            reviews=bools[0],
+            timeout=timeout
+        )
+        return response
 
 
 class Winery(SnoothBase):
-    pass
+
+    def __init__(self, winery):
+        self.name = winery.get('name', '')
+        self.address = winery.get('address', '')
+        self.city = winery.get('city', '')
+        self.zip = winery.get('zip', '')
+        self.country = winery.get('country', '')
+        self.id = winery.get('id', '')
+        self.image = winery.get('image', '')
+        self.email = winery.get('email', '')
+        self.url = winery.get('url', '')
+        self.phone = winery.get('phone', '')
+        self.num_wines = winery.get('num_wines', '')
+        if winery.get('closed') == 1:
+            self.closed = True
+        else:
+            self.closed = False
+
+    def detail(self, winery_id, timeout=None):
+        snooth = SnoothClient()
+        response = snooth.winery_detail(self.id, timeout=timeout)
+        return response
