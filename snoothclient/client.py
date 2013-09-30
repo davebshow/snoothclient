@@ -104,7 +104,7 @@ class SnoothClient(SnoothBase):
         params.update(new_params)
         response = self.get(self.WINE_SEARCH_URL, params, timeout=timeout)
         python_response = self.parse_get_response(response)
-        output = self.wine_output(python_response)
+        output = self._wine_output(python_response)
         if output and wineify is True:
             output = self.wineify(output)
         return output
@@ -154,7 +154,7 @@ class SnoothClient(SnoothBase):
         params.update(new_params)
         response = self.get(self.MY_WINES_URL, params, timeout)
         python_response = self.parse_get_response(response)
-        output = self.wine_output(python_response)
+        output = self._wine_output(python_response)
         return output
 
     def wineify(self, output, username=None, password=None):
@@ -329,7 +329,7 @@ class SnoothClient(SnoothBase):
     def parse_post_response(self, response):
         return response.json()
 
-    def wine_output(self, python_response):
+    def _wine_output(self, python_response):
         if 'wines' in python_response:
             output = python_response['wines']
         else:
