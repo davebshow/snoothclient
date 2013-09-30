@@ -396,7 +396,7 @@ class Wine(SnoothBase):
     def detail(self, price=False, country=None, zipcode=None,
                pairings=False, photos=False, lat=None, lng=None,
                language=None, timeout=None):
-        snooth = SnoothClient()
+        snooth = SnoothClient(timeout=timeout)
         response = snooth.wine_detail(
             wine_id=self.code,
             price=price,
@@ -407,7 +407,6 @@ class Wine(SnoothBase):
             lat=lat,
             lng=lng,
             language=language,
-            timeout=timeout
         )
         return response
 
@@ -415,7 +414,11 @@ class Wine(SnoothBase):
              rating=None, review=None, private=False, tags=None,
              wishlist=False, cellar_count=None, timeout=None):
         username, password = self._set_credentials(username, password)
-        snooth = SnoothClient(username, password)
+        snooth = SnoothClient(
+            username=username,
+            username=password,
+            timeout=timeout
+        )
         response = snooth.wine_rate(
             wine_id=self.code,
             method=method,
@@ -425,14 +428,17 @@ class Wine(SnoothBase):
             tags=tags,
             wishlist=wishlist,
             cellar_count=cellar_count,
-            timeout=None
         )
         return response
 
     def list(self, username=None, password=None, timeout=None):
         username, password = self._set_credentials(username, password)
-        snooth = SnoothClient(username=username, password=password)
-        response = snooth.wishlist(wine_id=self.code, timeout=timeout)
+        snooth = SnoothClient(
+            username=username,
+            password=password,
+            timeout=timeout
+        )
+        response = snooth.wishlist(wine_id=self.code)
         return response
 
 
