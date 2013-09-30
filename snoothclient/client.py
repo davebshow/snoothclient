@@ -374,13 +374,14 @@ class Wine(SnoothBase):
                pairings=False, photos=False, lat=None, lng=None,
                language=None, timeout=None):
         snooth = SnoothClient()
+        bools = self._translate_bool(price, pairings, photos)
         response = snooth.wine_detail(
             wine_id=self.code,
-            price=price,
+            price=bools[0],
             country=country,
             zipcode=zipcode,
-            pairings=pairings,
-            photos=photos,
+            pairings=bools[1],
+            photos=bools[2],
             lat=lat,
             lng=lng,
             language=language,
@@ -393,6 +394,7 @@ class Wine(SnoothBase):
              wishlist=False, cellar_count=None, timeout=None):
         username, password = self._set_credentials(username, password)
         snooth = SnoothClient()
+        bools = self._translate_bool(private, wishlist)
         response = snooth.wine_rate(
             username=username,
             password=password,
@@ -400,9 +402,9 @@ class Wine(SnoothBase):
             method=method,
             rating=rating,
             review=review,
-            private=private,
+            private=bools[0],
             tags=tags,
-            wishlist=wishlist,
+            wishlist=bools[1],
             cellar_count=cellar_count,
             timeout=timeout
         )
