@@ -81,8 +81,7 @@ class SnoothClient(SnoothBase):
         timeout = self._set_timeout(timeout)
         bools = self._translate_bool(available)
         first_result = self._paginator(count, page, first_result)
-        if lat and not lng or lng and not lat:
-            raise SnoothError('Must pass both lat and lng')
+        self._check_lat_lng(lat, lng)
         params = self.basic_params()
         new_params = {
             'q': q,
@@ -116,8 +115,7 @@ class SnoothClient(SnoothBase):
                     language=None, timeout=None):
         timeout = self._set_timeout(timeout)
         bools = self._translate_bool(price, pairings, photos)
-        if lat and not lng or lng and not lat:
-            raise SnoothError('Must pass both lat and lng')
+        self._check_lat_lng(lat, lng)
         params = self.basic_params()
         new_params = {
             'id': wine_id,
@@ -233,8 +231,7 @@ class SnoothClient(SnoothBase):
     def store_search(self, country=None, zipcode=None,
                      lat=None, lng=None, timeout=None):
         timeout = self._set_timeout(timeout)
-        if lat and not lng or lng and not lat:
-            raise SnoothError('Must pass both lat and lng')
+        self._check_lat_lng(lat, lng)
         params = self.basic_params()
         new_params = {'c': country, 'z': zipcode, 'lat': lat, 'lng': lng}
         params.update(new_params)
@@ -366,6 +363,10 @@ class SnoothClient(SnoothBase):
         if not timeout:
             timeout = self.timeout
         return timeout
+
+    def _check_lat_lng(self, lat, lng):
+        if lat and not lng or lng and not lat:
+            raise SnoothError('Must pass both lat and lng')
 
 
 class Wine(SnoothBase):
