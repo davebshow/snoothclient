@@ -17,13 +17,8 @@ class SnoothTests(unittest.TestCase):
     def setUp(self):
         self.snooth = SnoothClient(api_key=API_KEY)
 
-    def test_api_urls(self):
-        self.assertEqual(self.WINE_SEARCH_URL, 'http://api.snooth.com/wines/')
-        self.assertEqual(
-            self.CREATE_ACCOUNT_URL,
-            'http://api.snooth.com/create-account/'
-        )
-        self.assertEqual(
-            self.STORE_SEARCH_URL,
-            'http://api.snooth.com/stores/'
-        )
+    def test_wine_search(self):
+        response = self.snooth.wine_search()
+        self.asserTrue(len(response > 0))
+        for wine in response:
+            self.assertTrue(isinstance(wine, dict))
