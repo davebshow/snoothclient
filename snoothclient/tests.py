@@ -49,12 +49,13 @@ class SnoothTests(unittest.TestCase):
         response = self.snooth.wine_detail(
             'chateau-recougne-red-bordeaux-blend-bordeaux-superieur-2009-4'
         )
-        self.assertTrue(len(response) > 1)
+        self.assertTrue(len(response) == 1)
 
     def test_wine_detail_timeout(self):
         self.assertRaises(
             Timeout,
             self.snooth.wine_detail,
+            'chateau-recougne-red-bordeaux-blend-bordeaux-superieur-2009-4',
             timeout=0.0000000000000000001
         )
 
