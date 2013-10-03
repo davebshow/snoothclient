@@ -3,7 +3,6 @@ import os
 import sys
 import requests
 from handlers import SnoothError, http_error_handler, snooth_error_handler
-
 try:
     API_KEY = os.environ['API_KEY']
 except KeyError:
@@ -35,13 +34,18 @@ class SnoothClient(object):
         self.timeout = timeout
 
     def basic_params(self):
-        params = {'akey': self.api_key, 'format': self.format, 'ip': self.ip,
-                  'u': self.username, 'p': self.password}
+        params = {
+            'akey': self.api_key,
+            'format': self.format,
+            'ip': self.ip,
+            'u': self.username,
+            'p': self.password
+        }
         return params
 
-    def wine_search(self, q='wine', wineify=False, count=10, page=1,
-                    first_result=None, available=False, prod_type=None,
-                    color=None, store_id=None, country=None,
+    def wine_search(self, q='wine', wineify=False, meta=False, count=10,
+                    page=1, first_result=None, available=False,
+                    prod_type=None, color=None, store_id=None, country=None,
                     zipcode=None, lat=None, lng=None, sort=None,
                     min_price=None, max_price=None, min_rank=None,
                     max_rank=None, lang=None, timeout=None):
@@ -50,17 +54,21 @@ class SnoothClient(object):
         bools = self._translate_bool(available)
         first_result = self._paginator(count, page, first_result)
         timeout = self._get_timeout(timeout)
-        new_params = {'q': q, 'f': first_result, 'n': count, 'a': bools[0],
-                      't': prod_type, 'color': color, 'm': store_id,
-                      'c': country, 'z': zipcode, 'lat': lat, 'lng': lng,
-                      's': sort, 'mp': min_price, 'xp': max_price,
-                      'mr': min_rank, 'xr': max_rank, 'lang': lang}
+        new_params = {
+            'q': q, 'f': first_result, 'n': count, 'a': bools[0],
+            't': prod_type, 'color': color, 'm': store_id,
+            'c': country, 'z': zipcode, 'lat': lat, 'lng': lng,
+            's': sort, 'mp': min_price, 'xp': max_price,
+            'mr': min_rank, 'xr': max_rank, 'lang': lang
+        }
         params.update(new_params)
         response = self.get(self.WINE_SEARCH_URL, params, timeout=timeout)
         python_response = self.parse_get_response(response)
         output = self._wine_output(python_response)
         if output and wineify is True:
             output = self.wineify(output)
+        elif meta is True:
+            output = python_response
         return output
 
     def wine_detail(self, wine_id, price=False, country=None, zipcode=None,
@@ -119,7 +127,7 @@ class SnoothClient(object):
         ]
         return wines
 
-    def winery_detail(self, winery_id, timeout=None):
+    def winery_detail(self, winery_id, wineryify=False, timeout=None):
         params = self.basic_params()
         timeout = self._get_timeout(timeout)
         new_params = {'id': winery_id}
@@ -129,6 +137,8 @@ class SnoothClient(object):
         try:
             output = python_response['winery']
         except KeyError:
+            if wineryify is True:
+                output = Winery(output)
             raise SnoothError('Unknown error has occured.')
         return output
 
@@ -287,7 +297,7 @@ class SnoothClient(object):
 
     def _paginator(self, count, page, first_result):
         if first_result is None:
-            first_result = page * count + 1
+            first_result = ((page - 1) * count) + 1
         return first_result
 
     def _get_credentials(self, username, password):
