@@ -21,7 +21,7 @@ def snooth_error_handler(post=None):
         def snooth_response_wrapper(self, *args, **kwargs):
             snooth_response = fn(self, *args, **kwargs)
             meta = snooth_response['meta']
-            errmsg = meta['errmsg'].decode('utf-8')
+            errmsg = meta['errmsg']
             if errmsg:
                 raise SnoothError(errmsg)
             if post and meta['status'] == 1:
