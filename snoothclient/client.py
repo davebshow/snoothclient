@@ -93,13 +93,14 @@ class SnoothClient(object):
         response = self.get(self.WINE_DETAIL_URL, params, timeout)
         python_response = self.parse_get_response(response)
         try:
-            output = python_response['wines']
+            output = python_response['wines'][0]
         except KeyError:
             raise SnoothError('Unknown error has occured.')
         return output
 
-    def my_wines(self, username=None, password=None, count=10, page=1,
-                 ratings=True, wishlist=True, cellar=True, timeout=None):
+    def my_wines(self, wineify=False, username=None, password=None, count=10,
+                 page=1, ratings=True, wishlist=True, cellar=True,
+                 timeout=None):
         params = self.basic_params()
         username, password = self._get_credentials(username, password)
         bools = self._translate_bool(ratings, wishlist, cellar)
@@ -117,15 +118,9 @@ class SnoothClient(object):
         response = self.get(self.MY_WINES_URL, params, timeout)
         python_response = self.parse_get_response(response)
         output = self._wine_output(python_response)
+        if wineify is True:
+            output = self.wineify(output)
         return output
-
-    def wineify(self, output, username=None, password=None):
-        username, password = self._get_credentials(username, password)
-        wines = [
-            Wine(wine, username=username,
-                 password=password) for wine in output
-        ]
-        return wines
 
     def winery_detail(self, winery_id, wineryify=False, timeout=None):
         params = self.basic_params()
@@ -186,8 +181,8 @@ class SnoothClient(object):
         python_response = self.parse_post_response(response)
         return python_response
 
-    def store_search(self, country=None, zipcode=None,
-                     lat=None, lng=None, timeout=None):
+    def store_search(self, country=None, zipcode=None, storeify=False,
+                     meta=False, lat=None, lng=None, timeout=None):
         self._check_lat_lng(lat, lng)
         params = self.basic_params()
         timeout = self._get_timeout(timeout)
@@ -197,6 +192,10 @@ class SnoothClient(object):
         python_response = self.parse_get_response(response)
         if 'stores' in python_response:
             output = python_response['stores']
+            if storeify is True:
+                output = self.storeify(output)
+            elif meta is True:
+                output = python_response
         else:
             output = None
         return output
@@ -249,6 +248,18 @@ class SnoothClient(object):
         except KeyError:
             raise SnoothClient('Unkown error has occured.')
         return output
+
+    def wineify(self, input, username=None, password=None):
+        username, password = self._get_credentials(username, password)
+        wines = [
+            Wine(wine, username=username,
+                 password=password) for wine in input
+        ]
+        return wines
+
+    def storeify(self, input):
+        stores = [WineStore(store) for store in input]
+        return stores
 
     @http_error_handler
     def get(self, url, params, timeout):
