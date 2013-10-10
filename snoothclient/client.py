@@ -9,6 +9,7 @@ except KeyError:
     API_KEY = None
     sys.stderr.write('Please set os.environ["API_KEY"] = yourapikey, '
                      'or pass api_key param in SnoothClient')
+    from api_key import API_KEY
 
 
 class SnoothClient(object):
@@ -369,7 +370,6 @@ class Wine(SnoothBaseObject):
         self.winery = wine.get('winery', '')
         self.winery_id = wine.get('winery_id', '')
         self.vintage = wine.get('vintage', '')
-        self.region = wine.get('region', '')
         self.varietal = wine.get('varietal', '')
         self.type = wine.get('type', '')
         self.link = wine.get('link', '')
@@ -379,6 +379,40 @@ class Wine(SnoothBaseObject):
         self.num_reviews = wine.get('num_reviews', '')
         self.tags = wine.get('tags', '')
         self.snoothrank = wine.get('snoothrank', '')
+        region = wine.get('region', '')
+        locs = region.split(' > ')
+        try:
+            self.country = locs[0]
+            if len(locs) > 4:
+                self.region = locs[1]
+                self.sub_region1 = locs[2]
+                self.sub_region2 = locs[3]
+                self.localities = locs[4:]
+            elif len(locs) > 3:
+                self.region = locs[1]
+                self.sub_region1 = locs[2]
+                self.sub_region2 = locs[3]
+                self.localities = ''
+            elif len(locs) > 2:
+                self.region = locs[1]
+                self.sub_region1 = locs[2]
+                self.sub_region2 = ''
+                self.localities = ''
+            elif len(locs) > 1:
+                self.region = locs[1]
+                self.sub_region1 = ''
+                self.sub_region2 = ''
+                self.localities = ''
+            elif len(locs) == 1:
+                self.region = ''
+                self.sub_region1 = ''
+                self.sub_region2 = ''
+                self.localities = ''
+        except IndexError:
+            self.region = ''
+            self.sub_region1 = ''
+            self.sub_region2 = ''
+            self.localities = ''
         if wine.get('available', '') == 1:
             self.available = True
         else:
