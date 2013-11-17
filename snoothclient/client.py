@@ -133,9 +133,9 @@ class SnoothClient(object):
         try:
             output = python_response['winery']
         except KeyError:
-            if wineryify is True:
-                output = Winery(output)
             raise SnoothError('Unknown error has occured.')
+        if wineryify is True:
+            output = Winery(output)
         return output
 
     def rate_wine(self, wine_id, method='POST', username=None, password=None,
@@ -301,10 +301,7 @@ class SnoothClient(object):
         return response.json()
 
     def _wine_output(self, python_response):
-        if 'wines' in python_response:
-            output = python_response['wines']
-        else:
-            output = None
+        output = python_response.get('wines', '')
         return output
 
     def _paginator(self, count, page, first_result):
